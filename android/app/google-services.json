@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "41003526118",
+    "firebase_url": "https://notecounting-95ec1.firebaseio.com",
+    "project_id": "notecounting-95ec1",
+    "storage_bucket": "notecounting-95ec1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41003526118:android:25464090bb839628569827",
+        "android_client_info": {
+          "package_name": "com.example.notecounting"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41003526118-n5ndf51djo6ct52o98cuv4199kht94lr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.notecounting",
+            "certificate_hash": "1c136d378973c3a770cc18e99502ce997be5d863"
+          }
+        },
+        {
+          "client_id": "41003526118-haha7vhjqrk1ijntn7eveaekq9dj9257.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvumsOdDrlQO3lioFjP9d4U_MGbkgsFVI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41003526118-haha7vhjqrk1ijntn7eveaekq9dj9257.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
