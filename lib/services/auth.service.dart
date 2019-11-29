@@ -14,9 +14,9 @@ class AuthService {
 		return File('$path/userkey.txt');
 	}
 
-  Future < File > createUserKey(email) async {
+  Future < File > createUserKey(token) async {
 		final file = await _localFile;
-		return file.writeAsString(email);
+		return file.writeAsString(token);
 	}
 
 	Future < String > readUserKey() async {

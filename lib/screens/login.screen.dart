@@ -35,7 +35,6 @@ class _LoginScreenState extends State < LoginScreen > {
       splashColor: Colors.grey,
       onPressed: () {
         signInWithGoogle().whenComplete(() {
-          appAuth.createUserKey(email);
           Navigator.pushReplacementNamed(context, 'home');
         });
       },

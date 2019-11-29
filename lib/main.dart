@@ -7,6 +7,8 @@ import 'package:notecounting/screens/home.screen.dart';
 AuthService appAuth = new AuthService();
 
 void main() async {
+
+  // ** BEGIN APP ROUTE ** //
   Router router = new Router();
 
   router.define('home', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
@@ -16,6 +18,7 @@ void main() async {
   router.define('login', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
     return new LoginScreen();
   }));
+  // ** END APP ROUTE ** //
 
   Widget _defaultHome = new LoginScreen();
 

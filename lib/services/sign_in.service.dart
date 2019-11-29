@@ -1,5 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:dio/dio.dart';
+import 'package:notecounting/utils/globals.dart';
+import 'package:notecounting/services/auth.service.dart';
+
+AuthService appAuth = new AuthService();
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -30,18 +35,34 @@ Future < String > signInWithGoogle() async {
 	email = user.email;
 	imageUrl = user.photoUrl;
 
-	// Only taking the first part of the name, i.e., First Name
-	if (name.contains(" ")) {
-		name = name.substring(0, name.indexOf(" "));
-	}
+  var url = Globals.apiUrl + "jwt/generateToken";
+            
+  try {
+    Response response = await Dio().post(url, data: {
+      'email': email,
+    });
 
-	assert(!user.isAnonymous);
-	assert(await user.getIdToken() != null);
+    if (response.data["result"] == 1) {
+      // Only taking the first part of the name, i.e., First Name
+      if (name.contains(" ")) {
+        name = name.substring(0, name.indexOf(" "));
+      }
 
-	final FirebaseUser currentUser = await _auth.currentUser();
-	assert(user.uid == currentUser.uid);
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
 
-	return 'signInWithGoogle succeeded: $user';
+      final FirebaseUser currentUser = await _auth.currentUser();
+      assert(user.uid == currentUser.uid);
+
+      appAuth.createUserKey("?token=" + response.data["data"]);
+
+      return "signInWithGoogle succeeded: $user";
+    } else {
+      return "signInWithGoogle failed";
+    }
+  } catch (e) {
+    return "signInWithGoogle failed, reason: $e";
+  }
 }
 
 void signOutGoogle() async {
