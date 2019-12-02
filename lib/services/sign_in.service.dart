@@ -55,6 +55,9 @@ Future < String > signInWithGoogle() async {
       assert(user.uid == currentUser.uid);
 
       appAuth.createUserKey("?token=" + response.data["data"]);
+      appAuth.createUserEmail(email);
+      appAuth.createUserName(name);
+      appAuth.createUserImage(imageUrl);
 
       return "signInWithGoogle succeeded: $user";
     } else {

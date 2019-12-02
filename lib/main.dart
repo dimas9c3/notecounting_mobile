@@ -3,6 +3,7 @@ import 'package:fluro/fluro.dart';
 import 'package:notecounting/services/auth.service.dart';
 import 'package:notecounting/screens/login.screen.dart';
 import 'package:notecounting/screens/home.screen.dart';
+// import 'package:notecounting/screens/account.screen.dart';
 
 AuthService appAuth = new AuthService();
 
@@ -18,6 +19,10 @@ void main() async {
   router.define('login', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
     return new LoginScreen();
   }));
+
+  // router.define('account', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
+  //   return new AccountScreen();
+  // }));
   // ** END APP ROUTE ** //
 
   Widget _defaultHome = new LoginScreen();

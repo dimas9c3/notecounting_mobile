@@ -28,6 +28,7 @@ dependencies:
   path_provider: ^1.4.5
   fluro: "^1.5.1"
   dio: ^3.0.7
+  bottom_navy_bar: ^5.2.0
 
 dev_dependencies:
   flutter_test:
