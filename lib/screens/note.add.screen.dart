@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-// import 'package:validate/validate.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:notecounting/utils/globals.dart';
-// import 'package:notecounting/models/Contact.dart';
 import 'package:notecounting/services/auth.service.dart';
 
 AuthService appAuth = new AuthService();
@@ -103,7 +101,9 @@ class _AddNoteState extends State < AddNote > {
       message: 'Please wait...',
       borderRadius: 10.0,
       backgroundColor: Colors.white,
-      progressWidget: CircularProgressIndicator(),
+      progressWidget: CircularProgressIndicator(
+        valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple),
+      ),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progressTextStyle: TextStyle(
@@ -357,7 +357,7 @@ class _AddNoteState extends State < AddNote > {
 
   String _validateLabel(String value) {
     if (_currentLabels == "" || _currentLabels == null) {
-      return 'The Note Label Cant Empty.';
+      return 'The Label Cant Empty.';
     }
 
     return null;
@@ -365,7 +365,7 @@ class _AddNoteState extends State < AddNote > {
 
   String _validateType(String value) {
     if (_currentTypes == "" || _currentTypes == null) {
-      return 'The Note Type Cant Empty.';
+      return 'The Type Cant Empty.';
     }
 
     return null;
