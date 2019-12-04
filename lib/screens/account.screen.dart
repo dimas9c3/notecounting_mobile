@@ -16,15 +16,41 @@ class AccountScreen extends StatelessWidget {
 }
 
 class MyAccount extends StatefulWidget {
-  MyAccount({
-    Key key,
-  }): super(key: key);
-
   @override
   _MyAccountState createState() => _MyAccountState();
 }
 
 class _MyAccountState extends State < MyAccount > {
+  String _userEmail = "";
+  String _userName  = "";
+  String _userImage = "";
+
+  _MyAccountState() {
+    getEmailFromFile().then((val) => setState(() {
+      _userEmail = val;
+    }));
+
+    getNameFromFile().then((val) => setState(() {
+      _userName = val;
+    }));
+
+    getImageFromFile().then((val) => setState(() {
+      _userImage = val;
+    }));
+  }
+
+  Future<String> getEmailFromFile() async {
+    return await appAuth.readUserEmail();
+  }
+
+  Future<String> getNameFromFile() async {
+    return await appAuth.readUserName();
+  }
+
+  Future<String> getImageFromFile() async {
+    return await appAuth.readUserImage();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +69,8 @@ class _MyAccountState extends State < MyAccount > {
             children: < Widget > [
               CircleAvatar(
                 backgroundImage: NetworkImage(
-                  imageUrl != null ? imageUrl : "https://via.placeholder.com/150/771796",
+                  // imageUrl != null ? imageUrl : "https://via.placeholder.com/150/771796",
+                  _userImage,
                 ),
                 radius: 60,
                 backgroundColor: Colors.transparent,
@@ -57,7 +84,7 @@ class _MyAccountState extends State < MyAccount > {
                   color: Colors.black54),
               ),
               Text(
-                name != null ? name : "https://via.placeholder.com/150/771796",
+                _userName,
                 style: TextStyle(
                   fontSize: 25,
                   color: Colors.deepPurple,
@@ -72,7 +99,7 @@ class _MyAccountState extends State < MyAccount > {
                   color: Colors.black54),
               ),
               Text(
-                email != null ? email : "https://via.placeholder.com/150/771796",
+                _userEmail,
                 style: TextStyle(
                   fontSize: 25,
                   color: Colors.deepPurple,

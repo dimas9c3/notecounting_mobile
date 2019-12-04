@@ -29,6 +29,10 @@ dependencies:
   fluro: "^1.5.1"
   dio: ^3.0.7
   bottom_navy_bar: ^5.2.0
+  validate: ^1.7.0
+  progress_dialog: ^1.2.0
+  pull_to_refresh: ^1.5.7
+  datetime_picker_formfield: ^0.4.3
 
 dev_dependencies:
   flutter_test:

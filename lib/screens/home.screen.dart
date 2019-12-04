@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluro/fluro.dart';
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
-import 'package:notecounting/screens/account.screen.dart';
 import 'package:notecounting/screens/login.screen.dart';
+import 'package:notecounting/screens/account.screen.dart';
+import 'package:notecounting/screens/note.screen.dart';
+import 'package:notecounting/screens/note.add.screen.dart';
+import 'package:notecounting/screens/test.screen.dart';
 
 void main() => runApp(HomeScreen());
 
@@ -23,12 +26,16 @@ class HomeScreen extends StatelessWidget {
     router.define('account', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
       return new AccountScreen();
     }));
+
+    router.define('note/add', handler: new Handler(handlerFunc: (BuildContext context, Map < String, dynamic > params) {
+      return new AddNote();
+    }));
     // ** END APP ROUTE ** //
 
 		return MaterialApp(
 			title: 'Flutter Demo',
 			theme: ThemeData(
-				primarySwatch: Colors.blue,
+				primarySwatch: Colors.purple,
 			),
 			home: MyHomePage(),
       onGenerateRoute: router.generator,
@@ -42,16 +49,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State < MyHomePage > {
-	int currentIndex = 1;
+	int currentIndex = 0;
 
 	GlobalKey bottomNavigationKey = GlobalKey();
 
 	@override
 	Widget build(BuildContext context) {
 		return Scaffold(
-			appBar: AppBar(
-				title: Text("NoteCounting"),
-			),
+			// appBar: AppBar(
+			// 	title: Text("NoteCounting"),
+			// ),
 			body: Container(
 				decoration: BoxDecoration(color: Colors.white),
 				child: Center(
@@ -66,14 +73,19 @@ class _MyHomePageState extends State < MyHomePage > {
 					currentIndex = index;
 				}),
 				items: [
-					BottomNavyBarItem(
-						icon: Icon(Icons.message),
-						title: Text('Messages'),
+          BottomNavyBarItem(
+						icon: Icon(Icons.apps),
+						title: Text('Home'),
 						activeColor: Colors.black,
 					),
 					BottomNavyBarItem(
-						icon: Icon(Icons.apps),
-						title: Text('Home'),
+						icon: Icon(Icons.speaker_notes),
+						title: Text('Note'),
+						activeColor: Colors.black,
+					),
+          BottomNavyBarItem(
+						icon: Icon(Icons.attach_money),
+						title: Text('Accounting'),
 						activeColor: Colors.black,
 					),
 					BottomNavyBarItem(
@@ -92,13 +104,6 @@ class _MyHomePageState extends State < MyHomePage > {
 				return Column(
 					mainAxisSize: MainAxisSize.min,
 					children: < Widget > [
-						Text("This is the first page"),
-					],
-				);
-			case 1:
-				return Column(
-					mainAxisSize: MainAxisSize.min,
-					children: < Widget > [
 						Text("This is the home page"),
 						RaisedButton(
 							child: Text(
@@ -112,7 +117,11 @@ class _MyHomePageState extends State < MyHomePage > {
             )
 					],
 				);
-			case 2:
+			case 1:
+				return new Note();
+      case 2:
+        return new MyApp();
+			case 3:
 				return new AccountScreen();
 		}
 	}
