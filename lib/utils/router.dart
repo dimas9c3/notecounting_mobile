@@ -5,7 +5,6 @@ import 'package:notecounting/screens/home.screen.dart';
 import 'package:notecounting/screens/account.screen.dart';
 import 'package:notecounting/screens/note.screen.dart';
 import 'package:notecounting/screens/note.add.screen.dart';
-import 'package:notecounting/Counter.dart';
 
 class FluroRouter {
   static Router router = Router();
