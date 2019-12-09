@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:notecounting/utils/router.dart';
 import 'package:notecounting/services/sign_in.service.dart';
 import 'package:notecounting/services/auth.service.dart';
 
-AuthService appAuth = new AuthService();
+void main() async {
+  FluroRouter.setupRouter();
+  runApp(AccountScreen());
+}
 
-void main() => runApp(AccountScreen());
+AuthService appAuth = new AuthService();
 
 class AccountScreen extends StatelessWidget {
   @override
@@ -21,6 +25,7 @@ class MyAccount extends StatefulWidget {
 }
 
 class _MyAccountState extends State < MyAccount > {
+
   String _userEmail = "";
   String _userName  = "";
   String _userImage = "";

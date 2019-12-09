@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:dio/dio.dart';
-// import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:flushbar/flushbar.dart';
+import 'package:notecounting/utils/router.dart';
 import 'package:notecounting/models/notes.dart';
 import 'package:notecounting/utils/globals.dart';
 import 'package:notecounting/services/auth.service.dart';
+import 'package:notecounting/screens/note.details.screen.dart';
 
 AuthService appAuth = new AuthService();
-// RefreshController _refreshController = RefreshController(initialRefresh: false);
+RefreshController _refreshController = RefreshController(initialRefresh: false);
 
-void main() => runApp(Note());
+void main() async {
+  FluroRouter.setupRouter();
+  runApp(Note());
+}
 
 class Note extends StatefulWidget {
   @override
@@ -46,73 +52,172 @@ class _NoteState extends State < Note > {
     }
   }
 
-  // void _onRefresh() async {
-  //       setState(() {
-  //           notes = _fetchNotes();
-  //       });
+  void _onRefresh() async {
+    setState(() {
+      notes = _fetchNotes();
+    });
 
-  //       _refreshController.refreshCompleted();
-  //   }
+    _refreshController.refreshCompleted();
+  }
 
-  //   void _onLoading() async {
+  void _onLoading() async {
 
-  //       if (mounted)
-  //         setState(() {
+    if (mounted)
+      setState(() {
 
-  //         });
-  //       _refreshController.loadComplete();
-  //   }
+      });
+    _refreshController.loadComplete();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      onGenerateRoute: FluroRouter.router.generator,
       home: Scaffold(
         body: Container(
-          child: Column(
-            children: < Widget > [
-              Stack(
-                children: < Widget > [backgroundHeader(), summary()],
-              ),
-              FutureBuilder < List < Notes >> (
-                future: notes,
-                builder: (BuildContext context, AsyncSnapshot < List < Notes >> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
+          child: SmartRefresher(
+            enablePullDown: true,
+            enablePullUp: true,
+            header: WaterDropMaterialHeader(color: Colors.black,),
+            footer: CustomFooter(
+              builder: (BuildContext context, LoadStatus mode) {
+                Widget body;
+                if (mode == LoadStatus.idle) {
+                  body = Text("pull up load");
+                } else if (mode == LoadStatus.loading) {
+                  body = CircularProgressIndicator();
+                } else if (mode == LoadStatus.failed) {
+                  body = Text("Load Failed!Click retry!");
+                } else if (mode == LoadStatus.canLoading) {
+                  body = Text("release to load more");
+                } else {
+                  body = Text("No more Data");
+                }
+                return Container(
+                  height: 55.0,
+                  child: Center(child: body),
+                );
+              },
+            ),
+            controller: _refreshController,
+            onRefresh: _onRefresh,
+            onLoading: _onLoading,
+            child: ListView(
+              children: < Widget > [
+                Stack(
+                  children: < Widget > [backgroundHeader(), summary()],
+                ),
+                Container(
+                  padding: const EdgeInsets.only(top: 10),
+                    child:
+                    FutureBuilder < List < Notes >> (
+                      future: notes,
+                      builder: (BuildContext context, AsyncSnapshot < List < Notes >> snapshot) {
 
-                  // if (!snapshot.hasData) return Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator(
+                            valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple)
+                          ));
+                        }
 
-                  return ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      return Card(
-                        margin: EdgeInsets.only(top: 15, left: 15, right: 15),
-                        elevation: 8,
-                        child: ListTile(
-                          leading: Icon(
-                            snapshot.data[index].type == "Regular" ? Icons.check_box : Icons.timer,
-                            color: snapshot.data[index].type == "Regular" ? Colors.lightGreen : Colors.redAccent,
-                          ),
-                          title: Text(
-                            snapshot.data[index].title,
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text("Label : " + snapshot.data[index].label),
-                          trailing: Text(
-                            snapshot.data[index].status,
-                            style: TextStyle(color: snapshot.data[index].status == "Completed" ? Colors.lightGreen : Colors.redAccent),
-                          ),
-                        ),
-                      );
-                    },
-                  );
+                        if (snapshot.data.length == 0) {
+                          return Container(
+                            child: Column(
+                              children: < Widget > [
+                                Center(
+                                  child: Card(
+                                    margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                                    elevation: 8,
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.hourglass_empty,
+                                        color: Colors.grey,
+                                      ),
+                                      title: Text(
+                                        "Data Is Empty Or No Internet Connection",
+                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                      subtitle: Text("Please Create New Note Or Connect To Internet"),
+                                      trailing: Icon(Icons.warning, color: Colors.grey),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
 
-                },
-              ),
-            ],
+                        return ListView.builder(
+                          physics: NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return Card(
+                              margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                              elevation: 8,
+                              child: ListTile(
+                                onLongPress: () {
+                                  
+                                },
+                                onTap: () async {
+                                  // final result = await Navigator.pushNamed(context, 'note/details');
+                                  final result = await Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => DetailsNote(
+                                      noteId: snapshot.data[index].id.toString(),
+                                      noteTitle: snapshot.data[index].title,
+                                      noteLabel: snapshot.data[index].label,
+                                      noteType: snapshot.data[index].type,
+                                      noteDescription: snapshot.data[index].description,
+                                    )),
+                                  );
+
+                                  if (result != null) {
+                                    var res = json.decode(result);
+
+                                    if (res['fromScreen'] == 'deleteNotes' && res['isRefresh'] == true){
+                                      setState(() {
+                                        notes = _fetchNotes();
+                                      });
+
+                                      String msg = res['message'];
+                                      Flushbar(
+                                        message: msg,
+                                        flushbarPosition: FlushbarPosition.TOP,
+                                        icon: Icon(
+                                          Icons.info_outline,
+                                          size: 28.0,
+                                          color: Colors.blue[300],
+                                        ),
+                                        duration: Duration(seconds: 3),
+                                        leftBarIndicatorColor: Colors.blue[300],
+                                      )..show(context);
+                                    }
+                                  }
+                                },
+                                leading: Icon(
+                                  snapshot.data[index].type == "Regular" ? Icons.check_box : Icons.timer,
+                                  color: snapshot.data[index].type == "Regular" ? Colors.lightGreen : Colors.redAccent,
+                                ),
+                                title: Text(
+                                  snapshot.data[index].title,
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Text("Label : " + snapshot.data[index].label),
+                                trailing: Text(
+                                  snapshot.data[index].status,
+                                  style: TextStyle(color: snapshot.data[index].status == "Completed" ? Colors.lightGreen : Colors.redAccent),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                ),
+              ],
+            ),
           ),
         ),
         floatingActionButton: Padding(
@@ -138,10 +243,21 @@ class _NoteState extends State < Note > {
 
       if (res['fromScreen'] == 'addUserNotes' && res['isRefresh'] == true) {
         setState(() {
-            notes = _fetchNotes();
+          notes = _fetchNotes();
         });
+
         String msg = res['message'];
-        Scaffold.of(context)..removeCurrentSnackBar()..showSnackBar(SnackBar(duration: const Duration(milliseconds: 1500), content: Text("$msg")));
+        Flushbar(
+          message: msg,
+          flushbarPosition: FlushbarPosition.TOP,
+          icon: Icon(
+            Icons.info_outline,
+            size: 28.0,
+            color: Colors.blue[300],
+          ),
+          duration: Duration(seconds: 3),
+          leftBarIndicatorColor: Colors.blue[300],
+        )..show(context);
       }
     }
   }
