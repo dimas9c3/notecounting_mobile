@@ -16,7 +16,10 @@ void main() async {
   }
 
   runApp(new MaterialApp(
-    title: 'App',
+    title: 'NoteCounting',
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
     home: _defaultHome,
     onGenerateRoute: FluroRouter.router.generator,
   ));

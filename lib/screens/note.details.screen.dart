@@ -14,15 +14,15 @@ class DetailsNote extends StatefulWidget {
   final String noteDueDate;
 
   DetailsNote({
-     Key key,
-     @required 
-     this.noteId,
-     this.noteTitle,
-     this.noteLabel,
-     this.noteType,
-     this.noteDescription,
-     this.noteDueDate,
-   }): super(key: key);
+    Key key,
+    @required
+    this.noteId,
+    this.noteTitle,
+    this.noteLabel,
+    this.noteType,
+    this.noteDescription,
+    this.noteDueDate,
+  }): super(key: key);
 
   @override
   _DetailsNoteState createState() => _DetailsNoteState();
@@ -39,7 +39,7 @@ class _DetailsNoteState extends State < DetailsNote > {
       borderRadius: 10.0,
       backgroundColor: Colors.white,
       progressWidget: CircularProgressIndicator(
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple),
+        valueColor: new AlwaysStoppedAnimation < Color > (Colors.purple),
       ),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
@@ -49,26 +49,22 @@ class _DetailsNoteState extends State < DetailsNote > {
         color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.purple,
-      ),
-      home: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          leading: IconButton(icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.purple,
+        automaticallyImplyLeading: true,
+        leading: IconButton(icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
-        body: Container(
-          child: ListView(
-            children: < Widget > [
-              Stack(
-                children: < Widget > [backgroundHeader(), summary()],
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10),
+      ),
+      body: Container(
+        child: ListView(
+          children: < Widget > [
+            Stack(
+              children: < Widget > [backgroundHeader(), summary()],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
                 child: Container(
                   height: screenSize.height,
                   width: double.infinity,
@@ -95,7 +91,7 @@ class _DetailsNoteState extends State < DetailsNote > {
                             Padding(
                               padding: const EdgeInsets.all(10.0),
                                 child: Text(
-                                 widget.noteDescription,
+                                  widget.noteDescription,
                                   style: TextStyle(
                                     fontSize: 18, color: Colors.white, fontWeight: FontWeight.normal),
                                 ),
@@ -105,9 +101,8 @@ class _DetailsNoteState extends State < DetailsNote > {
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -186,4 +181,3 @@ class _DetailsNoteState extends State < DetailsNote > {
     );
   }
 }
-

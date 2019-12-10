@@ -15,7 +15,6 @@ class _FormData {
 }
 
 String _date = '';
-
 ProgressDialog pr;
 
 class AddNote extends StatefulWidget {
@@ -103,7 +102,7 @@ class _AddNoteState extends State < AddNote > {
       borderRadius: 10.0,
       backgroundColor: Colors.white,
       progressWidget: CircularProgressIndicator(
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple),
+        valueColor: new AlwaysStoppedAnimation < Color > (Colors.purple),
       ),
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
@@ -113,196 +112,197 @@ class _AddNoteState extends State < AddNote > {
         color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.purple,
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        leading: IconButton(icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        )
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          leading: IconButton(icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          )
-        ),
-        body: Container(
-          child: ListView(
-            children: < Widget > [
-              Stack(
-                children: < Widget > [backgroundHeader(), summary()],
-              ),
-              Padding(
-                padding: new EdgeInsets.all(15.0),
-                child: new Form(
-                  key: this._formKey,
-                  child: new Column(
-                    children: < Widget > [
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: new Material(
-                          elevation: 10.0,
-                          shadowColor: Colors.black45,
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: new TextFormField(
-                            keyboardType: TextInputType.text,
-                            decoration: new InputDecoration(
-                              // icon: new Icon(Icons.lock, color: Color(0xff224597)),
-                              prefixIcon: new Icon(Icons.title, color: Colors.black),
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Input Title For Your Note',
-                              // labelText: 'Note Title',
-                              errorStyle: TextStyle(fontSize: 16.0,),
-                              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                              enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(10.0),
-                              borderSide: BorderSide(color: Colors.grey, width: 1.0))
-                            ),
-                            validator: this._validateTitle,
-                            onSaved: (String value) {
-                              this._data.title = value;
-                            },
-                            onFieldSubmitted: (String value) {
-                              FocusScope.of(context).requestFocus(txtDescription);
-                            },
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Material(
-                          elevation: 10.0,
-                          shadowColor: Colors.black45,
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: new TextFormField(
-                            focusNode: txtDescription,
-                            maxLines: 8,
-                            keyboardType: TextInputType.multiline,
-                            decoration: new InputDecoration(
-                              // icon: new Icon(Icons.lock, color: Color(0xff224597)),
-                              prefixIcon: new Icon(Icons.description, color: Colors.black),
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: 'Input Description For Your Note',
-                              // labelText: 'Note Description',
-                              errorStyle: TextStyle(fontSize: 16.0,),
-                              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                              // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
-                              // borderSide: BorderSide(color: Colors.white, width: 3.0))
-                            ),
-                            validator: this._validateDescription,
-                            onSaved: (String value) {
-                              this._data.description = value;
-                            },
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Material(
-                          elevation: 10.0,
-                          shadowColor: Colors.black45,
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: new Container(
-                          width: screenSize.width,
-                          child: DropdownButtonHideUnderline(
-                              child: DropdownButtonFormField(
-                                hint: Text('Select Your Note Label'),
-                                decoration: InputDecoration(
-                                  prefixIcon: new Icon(Icons.label, color: Colors.black),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  errorStyle: TextStyle(fontSize: 16.0,),
-                                  contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                                  // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
-                                  // borderSide: BorderSide(color: Colors.white, width: 3.0))
-                                ),
-                                value: _currentLabels,
-                                items: _dropDownMenuLabels,
-                                onChanged: changedDropDownLabels,
-                                validator: this._validateLabel,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Material(
-                          elevation: 10.0,
-                          shadowColor: Colors.black45,
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: new Container(
-                          width: screenSize.width,
-                          child: DropdownButtonHideUnderline(
-                              child: DropdownButtonFormField(
-                                hint: Text('Select Your Note Type'),
-                                decoration: InputDecoration(
-                                  prefixIcon: new Icon(Icons.merge_type, color: Colors.black),
-                                  filled: true,
-                                  fillColor: Colors.white,
-                                  errorStyle: TextStyle(fontSize: 16.0,),
-                                  contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
-                                  // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
-                                  // borderSide: BorderSide(color: Colors.white, width: 3.0))
-                                ),
-                                value: _currentTypes,
-                                items: _dropDownMenuTypes,
-                                onChanged: changedDropDownTypes,
-                                validator: this._validateType,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Visibility(
-                        child: Padding(
+      body: Container(
+        child: ListView(
+          children: < Widget > [
+            Stack(
+              children: < Widget > [backgroundHeader(), summary()],
+            ),
+            ListView(
+              physics: NeverScrollableScrollPhysics(),
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              children: < Widget > [
+                Padding(
+                  padding: new EdgeInsets.all(15.0),
+                  child: new Form(
+                    key: this._formKey,
+                    child: new Column(
+                      children: < Widget > [
+                        Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: new BasicDateField(),
+                          child: new Material(
+                            elevation: 10.0,
+                            shadowColor: Colors.black45,
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: new TextFormField(
+                              keyboardType: TextInputType.text,
+                              decoration: new InputDecoration(
+                                // icon: new Icon(Icons.lock, color: Color(0xff224597)),
+                                prefixIcon: new Icon(Icons.title, color: Colors.black),
+                                filled: true,
+                                fillColor: Colors.white,
+                                hintText: 'Input Title For Your Note',
+                                // labelText: 'Note Title',
+                                errorStyle: TextStyle(fontSize: 16.0, ),
+                                contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide(color: Colors.grey, width: 1.0))
+                              ),
+                              validator: this._validateTitle,
+                              onSaved: (String value) {
+                                this._data.title = value;
+                              },
+                              onFieldSubmitted: (String value) {
+                                FocusScope.of(context).requestFocus(txtDescription);
+                              },
+                            ),
+                          ),
                         ),
-                        maintainSize: true,
-                        maintainAnimation: true,
-                        maintainState: true,
-                        visible: _dueDateVisible,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: new Container(
-                          width: screenSize.width,
-                          height: 45.0,
-                          child: new RaisedButton(
-                            color: Colors.purple,
-                            splashColor: Colors.grey,
-                            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-                            child: new Text(
-                              'Submit',
-                              style: new TextStyle(
-                                fontSize: 20.0,
-                                color: Colors.white
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Material(
+                            elevation: 10.0,
+                            shadowColor: Colors.black45,
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: new TextFormField(
+                              focusNode: txtDescription,
+                              maxLines: 8,
+                              keyboardType: TextInputType.multiline,
+                              decoration: new InputDecoration(
+                                // icon: new Icon(Icons.lock, color: Color(0xff224597)),
+                                prefixIcon: new Icon(Icons.description, color: Colors.black),
+                                filled: true,
+                                fillColor: Colors.white,
+                                hintText: 'Input Description For Your Note',
+                                // labelText: 'Note Description',
+                                errorStyle: TextStyle(fontSize: 16.0, ),
+                                contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                                // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
+                                // borderSide: BorderSide(color: Colors.white, width: 3.0))
+                              ),
+                              validator: this._validateDescription,
+                              onSaved: (String value) {
+                                this._data.description = value;
+                              },
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Material(
+                            elevation: 10.0,
+                            shadowColor: Colors.black45,
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: new Container(
+                              width: screenSize.width,
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButtonFormField(
+                                  hint: Text('Select Your Note Label'),
+                                  decoration: InputDecoration(
+                                    prefixIcon: new Icon(Icons.label, color: Colors.black),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    errorStyle: TextStyle(fontSize: 16.0, ),
+                                    contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                                    // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
+                                    // borderSide: BorderSide(color: Colors.white, width: 3.0))
+                                  ),
+                                  value: _currentLabels,
+                                  items: _dropDownMenuLabels,
+                                  onChanged: changedDropDownLabels,
+                                  validator: this._validateLabel,
+                                ),
                               ),
                             ),
-                            onPressed: () {
-                              FocusScopeNode currentFocus = FocusScope.of(context);
-                              if (!currentFocus.hasPrimaryFocus) {
-                                currentFocus.unfocus();
-                              }
-                              submit();
-                            },
-                          ),
-                          margin: new EdgeInsets.only(
-                            top: 5.0
                           ),
                         ),
-                      ),
-                    ],
-                  )
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Material(
+                            elevation: 10.0,
+                            shadowColor: Colors.black45,
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: new Container(
+                              width: screenSize.width,
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButtonFormField(
+                                  hint: Text('Select Your Note Type'),
+                                  decoration: InputDecoration(
+                                    prefixIcon: new Icon(Icons.merge_type, color: Colors.black),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    errorStyle: TextStyle(fontSize: 16.0, ),
+                                    contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),
+                                    // enabledBorder: OutlineInputBorder(borderRadius:BorderRadius.circular(30.0),
+                                    // borderSide: BorderSide(color: Colors.white, width: 3.0))
+                                  ),
+                                  value: _currentTypes,
+                                  items: _dropDownMenuTypes,
+                                  onChanged: changedDropDownTypes,
+                                  validator: this._validateType,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Visibility(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: new BasicDateField(),
+                          ),
+                          maintainSize: true,
+                          maintainAnimation: true,
+                          maintainState: true,
+                          visible: _dueDateVisible,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: new Container(
+                            width: screenSize.width,
+                            height: 45.0,
+                            child: new RaisedButton(
+                              color: Colors.purple,
+                              splashColor: Colors.grey,
+                              shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
+                              child: new Text(
+                                'Submit',
+                                style: new TextStyle(
+                                  fontSize: 20.0,
+                                  color: Colors.white
+                                ),
+                              ),
+                              onPressed: () {
+                                FocusScopeNode currentFocus = FocusScope.of(context);
+                                if (!currentFocus.hasPrimaryFocus) {
+                                  currentFocus.unfocus();
+                                }
+                                submit();
+                              },
+                            ),
+                            margin: new EdgeInsets.only(
+                              top: 5.0
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

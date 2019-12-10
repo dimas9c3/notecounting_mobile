@@ -1,37 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
-import 'package:notecounting/utils/router.dart';
 import 'package:notecounting/screens/account.screen.dart';
 import 'package:notecounting/screens/note.screen.dart';
-import 'package:notecounting/screens/test.screen.dart';
 
-void main() async {
-  FluroRouter.setupRouter();
-  runApp(HomeScreen());
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'NoteCounting',
-      theme: ThemeData(
-        primarySwatch: Colors.purple,
-      ),
-      home: MyHomePage(),
-      onGenerateRoute: FluroRouter.router.generator,
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State < MyHomePage > {
+class _MyHomePageState extends State < HomeScreen > {
   int currentPage = 0;
-
   GlobalKey bottomNavigationKey = GlobalKey();
 
   @override
@@ -111,7 +89,7 @@ class _MyHomePageState extends State < MyHomePage > {
       case 1:
         return new Note();
       case 2:
-        return new MyApp();
+        return new AccountScreen();
       case 3:
         return new AccountScreen();
     }
