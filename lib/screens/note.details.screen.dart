@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
-import 'package:notecounting/utils/globals.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:notecounting/services/auth.service.dart';
 
@@ -13,6 +11,7 @@ class DetailsNote extends StatefulWidget {
   final String noteLabel;
   final String noteType;
   final String noteDescription;
+  final String noteDueDate;
 
   DetailsNote({
      Key key,
@@ -22,6 +21,7 @@ class DetailsNote extends StatefulWidget {
      this.noteLabel,
      this.noteType,
      this.noteDescription,
+     this.noteDueDate,
    }): super(key: key);
 
   @override
@@ -60,9 +60,6 @@ class _DetailsNoteState extends State < DetailsNote > {
           leading: IconButton(icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
           ),
-          actions: < Widget > [
-            IconButton(icon: Icon(Icons.delete), onPressed: _showDialog),
-          ],
         ),
         body: Container(
           child: ListView(
@@ -111,17 +108,6 @@ class _DetailsNoteState extends State < DetailsNote > {
               ),
             ],
           ),
-        ),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 20.0),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(context, 'note/add');
-              },
-              tooltip: 'Edit Note',
-              child: Icon(Icons.edit, color: Colors.black,),
-              backgroundColor: Colors.white,
-            ),
         ),
       ),
     );
@@ -198,65 +184,6 @@ class _DetailsNoteState extends State < DetailsNote > {
         ),
       ),
     );
-  }
-
-  void _showDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          title: new Text("Delete Notes"),
-          content: new Text("Are you sure delete this notes ?"),
-          actions: < Widget > [
-            // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("Yes"),
-              onPressed: () {
-                submitDelete();
-                Navigator.pop(context);
-              },
-            ),
-            new FlatButton(
-              child: new Text("No"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void submitDelete() async {
-    Future.delayed(Duration(milliseconds: 30)).then((onValue) {
-      pr.show();
-    });
-
-    String _token = await appAuth.readUserKey();
-
-    var url = Globals.apiUrl + "v1/usernotes/delete/" + widget.noteId + _token;
-
-    try {
-      Response response = await Dio().get(url);
-
-      pr.hide();
-
-      Future.delayed(Duration(milliseconds: 30)).then((onValue) {
-        if (response.data["result"] == 1) {
-          var mes = response.data["message"];
-          var msg = '{"isRefresh": true, "fromScreen": "deleteNotes", "message": "$mes"}';
-          Navigator.pop(context, msg);
-        } else {
-          // showToast(response.data["reason"]["0"], duration: Toast.LENGTH_LONG, gravity: Toast.TOP);
-        }
-      });
-
-    } catch (e) {
-      Navigator.pop(context, false);
-      // showToast("Network failure", gravity: Toast.TOP);
-    }
   }
 }
 

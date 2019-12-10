@@ -8,6 +8,7 @@ import 'package:notecounting/models/notes.dart';
 import 'package:notecounting/utils/globals.dart';
 import 'package:notecounting/services/auth.service.dart';
 import 'package:notecounting/screens/note.details.screen.dart';
+import 'package:notecounting/screens/note.edit.screen.dart';
 
 AuthService appAuth = new AuthService();
 RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -109,16 +110,19 @@ class _NoteState extends State < Note > {
                   children: < Widget > [backgroundHeader(), summary()],
                 ),
                 Container(
-                  padding: const EdgeInsets.only(top: 10),
+                  // padding: const EdgeInsets.only(top: 10),
                     child:
                     FutureBuilder < List < Notes >> (
                       future: notes,
                       builder: (BuildContext context, AsyncSnapshot < List < Notes >> snapshot) {
 
                         if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator(
-                            valueColor: new AlwaysStoppedAnimation<Color>(Colors.purple)
-                          ));
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                              child: Center(child: CircularProgressIndicator(
+                                valueColor: new AlwaysStoppedAnimation < Color > (Colors.purple)
+                              )),
+                          );
                         }
 
                         if (snapshot.data.length == 0) {
@@ -127,7 +131,7 @@ class _NoteState extends State < Note > {
                               children: < Widget > [
                                 Center(
                                   child: Card(
-                                    margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                                    margin: EdgeInsets.only(top: 5, left: 15, right: 15),
                                     elevation: 8,
                                     child: ListTile(
                                       leading: Icon(
@@ -155,28 +159,25 @@ class _NoteState extends State < Note > {
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
                             return Card(
-                              margin: EdgeInsets.only(top: 15, left: 15, right: 15),
+                              margin: EdgeInsets.only(top: 5, left: 15, right: 15, bottom: 5),
                               elevation: 8,
                               child: ListTile(
-                                onLongPress: () {
-                                  
-                                },
-                                onTap: () async {
-                                  // final result = await Navigator.pushNamed(context, 'note/details');
+                                onLongPress: () async {
                                   final result = await Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) => DetailsNote(
+                                    MaterialPageRoute(builder: (context) => EditNote(
                                       noteId: snapshot.data[index].id.toString(),
                                       noteTitle: snapshot.data[index].title,
                                       noteLabel: snapshot.data[index].label,
                                       noteType: snapshot.data[index].type,
                                       noteDescription: snapshot.data[index].description,
+                                      noteDueDate: snapshot.data[index].dueDate,
                                     )),
                                   );
 
                                   if (result != null) {
                                     var res = json.decode(result);
 
-                                    if (res['fromScreen'] == 'deleteNotes' && res['isRefresh'] == true){
+                                    if (res['fromScreen'] == 'EditUserNotes' && res['isRefresh'] == true){
                                       setState(() {
                                         notes = _fetchNotes();
                                       });
@@ -195,6 +196,19 @@ class _NoteState extends State < Note > {
                                       )..show(context);
                                     }
                                   }
+                                },
+                                onTap: () async {
+                                  // final result = await Navigator.pushNamed(context, 'note/details');
+                                  Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) => DetailsNote(
+                                      noteId: snapshot.data[index].id.toString(),
+                                      noteTitle: snapshot.data[index].title,
+                                      noteLabel: snapshot.data[index].label,
+                                      noteType: snapshot.data[index].type,
+                                      noteDescription: snapshot.data[index].description,
+                                      noteDueDate: snapshot.data[index].dueDate,
+                                    )),
+                                  );
                                 },
                                 leading: Icon(
                                   snapshot.data[index].type == "Regular" ? Icons.check_box : Icons.timer,

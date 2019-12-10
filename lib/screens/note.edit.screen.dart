@@ -15,15 +15,33 @@ class _FormData {
 }
 
 String _date = '';
-
+DateTime _dueDateValue;
 ProgressDialog pr;
 
-class AddNote extends StatefulWidget {
+class EditNote extends StatefulWidget {
+  final String noteId;
+  final String noteTitle;
+  final String noteLabel;
+  final String noteType;
+  final String noteDescription;
+  final String noteDueDate;
+
+  EditNote({
+     Key key,
+     @required 
+     this.noteId,
+     this.noteTitle,
+     this.noteLabel,
+     this.noteType,
+     this.noteDescription,
+     this.noteDueDate,
+   }): super(key: key);
+
   @override
-  _AddNoteState createState() => _AddNoteState();
+  _EditNoteState createState() => _EditNoteState();
 }
 
-class _AddNoteState extends State < AddNote > {
+class _EditNoteState extends State < EditNote > {
   List _labels = [{
     "id": "1",
     "item": "Personal",
@@ -54,19 +72,44 @@ class _AddNoteState extends State < AddNote > {
 
   String _currentLabels;
   String _currentTypes;
-  bool _dueDateVisible = false;
+  bool _dueDateVisible;
 
   final GlobalKey < FormState > _formKey = new GlobalKey < FormState > ();
-  final passtxt = TextEditingController();
 
   _FormData _data = new _FormData();
 
   @override
   void initState() {
+    if(widget.noteLabel == "Personal") {
+      _currentLabels = "1";
+    }
+    else if(widget.noteLabel == "Work") {
+      _currentLabels = "2";
+    }
+    else if(widget.noteLabel == "Events") {
+      _currentLabels = "3";
+    }
+    else if(widget.noteLabel == "Friends") {
+      _currentLabels = "4";
+    }
+    else if(widget.noteLabel == "Others") {
+      _currentLabels = "5";
+    }
+
+    if(widget.noteType == "Regular") {
+      _currentTypes   = "1";
+      _dueDateVisible = false;
+    }
+    else if(widget.noteType == "Deadline") {
+      _currentTypes   = "2";
+      _dueDateVisible = true;
+      String _dueDateVal = DateFormat('yyyy-MM-dd').format(DateTime.parse(widget.noteDueDate));
+      _dueDateValue = DateTime.parse(_dueDateVal);
+    }
+    
+
     _dropDownMenuLabels = getDropDownMenuLabels();
-    // _currentLabels = _dropDownMenuLabels[0].value;
-    _dropDownMenuTypes = getDropDownMenuTypes();
-    // _currentTypes = _dropDownMenuTypes[0].value;
+    _dropDownMenuTypes  = getDropDownMenuTypes();
     super.initState();
   }
 
@@ -94,6 +137,8 @@ class _AddNoteState extends State < AddNote > {
 
   @override
   Widget build(BuildContext context) {
+    
+
     FocusNode txtDescription = new FocusNode();
     final Size screenSize = MediaQuery.of(context).size;
     pr = new ProgressDialog(context, type: ProgressDialogType.Normal);
@@ -119,11 +164,15 @@ class _AddNoteState extends State < AddNote > {
         primaryColor: Colors.purple,
       ),
       home: Scaffold(
+        resizeToAvoidBottomInset : false,
         appBar: AppBar(
           automaticallyImplyLeading: true,
           leading: IconButton(icon: Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
-          )
+          ),
+          actions: < Widget > [
+            IconButton(icon: Icon(Icons.delete), onPressed: _showDialog),
+          ],
         ),
         body: Container(
           child: ListView(
@@ -145,6 +194,7 @@ class _AddNoteState extends State < AddNote > {
                           borderRadius: BorderRadius.circular(10.0),
                           child: new TextFormField(
                             keyboardType: TextInputType.text,
+                            initialValue: widget.noteTitle,
                             decoration: new InputDecoration(
                               // icon: new Icon(Icons.lock, color: Color(0xff224597)),
                               prefixIcon: new Icon(Icons.title, color: Colors.black),
@@ -175,6 +225,7 @@ class _AddNoteState extends State < AddNote > {
                           shadowColor: Colors.black45,
                           borderRadius: BorderRadius.circular(10.0),
                           child: new TextFormField(
+                            initialValue: widget.noteDescription,
                             focusNode: txtDescription,
                             maxLines: 8,
                             keyboardType: TextInputType.multiline,
@@ -373,17 +424,17 @@ class _AddNoteState extends State < AddNote > {
   }
 
   void submit() async {
+    // First validate form.
     if (this._formKey.currentState.validate()) {
       pr.show();
       _formKey.currentState.save();
 
       String _token = await appAuth.readUserKey();
-      String _email = await appAuth.readUserEmail();
-      var url = Globals.apiUrl + "v1/usernotes/store" + _token;
+      var url = Globals.apiUrl + "v1/usernotes/update" + _token;
 
       try {
         Response response = await Dio().post(url, data: {
-          'email': _email,
+          'noteId': widget.noteId,
           'title': _data.title,
           'description': _data.description,
           'label': _currentLabels,
@@ -395,7 +446,7 @@ class _AddNoteState extends State < AddNote > {
 
         if (response.data["result"] == 1) {
           var mes = response.data["message"];
-          var msg = '{"isRefresh": true, "fromScreen": "addUserNotes", "message": "$mes"}';
+          var msg = '{"isRefresh": true, "fromScreen": "EditUserNotes", "message": "$mes"}';
           Navigator.pop(context, msg);
         } else {
           var mes = response.data["message"];
@@ -428,6 +479,87 @@ class _AddNoteState extends State < AddNote > {
       }
     }
   }
+
+  void _showDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Delete Notes"),
+          content: new Text("Are you sure delete this notes ?"),
+          actions: < Widget > [
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                submitDelete();
+                Navigator.pop(context);
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void submitDelete() async {
+    Future.delayed(Duration(milliseconds: 30)).then((onValue) {
+      pr.show();
+    });
+
+    String _token = await appAuth.readUserKey();
+
+    var url = Globals.apiUrl + "v1/usernotes/delete/" + widget.noteId + _token;
+
+    try {
+      Response response = await Dio().get(url);
+
+      pr.hide();
+
+      Future.delayed(Duration(milliseconds: 30)).then((onValue) {
+        if (response.data["result"] == 1) {
+          var mes = response.data["message"];
+          var msg = '{"isRefresh": true, "fromScreen": "EditUserNotes", "message": "$mes"}';
+          Navigator.pop(context, msg);
+        } else {
+          var mes = response.data["message"];
+          Flushbar(
+            message: mes,
+            flushbarPosition: FlushbarPosition.TOP,
+            icon: Icon(
+              Icons.error_outline,
+              size: 28.0,
+              color: Colors.blue[300],
+            ),
+            duration: Duration(seconds: 3),
+            leftBarIndicatorColor: Colors.blue[300],
+          )..show(context);
+        }
+      });
+
+    } catch (e) {
+      pr.hide();
+      Flushbar(
+        message: "Something error occured or no internet connection",
+        flushbarPosition: FlushbarPosition.TOP,
+        icon: Icon(
+          Icons.error_outline,
+          size: 28.0,
+          color: Colors.blue[300],
+        ),
+        duration: Duration(seconds: 3),
+        leftBarIndicatorColor: Colors.blue[300],
+      )..show(context);
+      print(e);
+    }
+  }
 }
 
 class BasicDateField extends StatelessWidget {
@@ -441,7 +573,7 @@ class BasicDateField extends StatelessWidget {
       child: Column(children: < Widget > [
         // Text('Input Deadline For Your Note (${format.pattern})'),
         DateTimeField(
-          initialValue: DateTime.now(),
+          initialValue: _dueDateValue,
           decoration: InputDecoration(
             prefixIcon: new Icon(Icons.calendar_today, color: Colors.black),
             filled: true,
@@ -497,7 +629,7 @@ Widget summary() {
                   // Text("Summary"),
                   // Divider(),
                   Text(
-                    "Fill This Form To Add Your Notes",
+                    "Change This Form To Edit Your Notes",
                     style: TextStyle(fontSize: 25, fontWeight: FontWeight.normal),
                   ),
                 ],
@@ -527,7 +659,7 @@ Widget backgroundHeader() {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: < Widget > [
               Text(
-                "Add User Notes",
+                "Edit User Notes",
                 style: TextStyle(
                   fontSize: 25, color: Colors.white, fontWeight: FontWeight.bold),
               ),
