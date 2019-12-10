@@ -190,16 +190,40 @@ class _NoteState extends State < Note > {
                             },
                             onTap: () async {
                               // final result = await Navigator.pushNamed(context, 'note/details');
-                              Navigator.push(context,
+                              final result = await Navigator.push(context,
                                 MaterialPageRoute(builder: (context) => DetailsNote(
                                   noteId: snapshot.data[index].id.toString(),
                                   noteTitle: snapshot.data[index].title,
                                   noteLabel: snapshot.data[index].label,
                                   noteType: snapshot.data[index].type,
+                                  noteStatus: snapshot.data[index].status,
                                   noteDescription: snapshot.data[index].description,
                                   noteDueDate: snapshot.data[index].dueDate,
                                 )),
                               );
+
+                              if (result != null) {
+                                var res = json.decode(result);
+
+                                if (res['fromScreen'] == 'DetailsUserNotes' && res['isRefresh'] == true) {
+                                  setState(() {
+                                    notes = _fetchNotes();
+                                  });
+
+                                  String msg = res['message'];
+                                  Flushbar(
+                                    message: msg,
+                                    flushbarPosition: FlushbarPosition.TOP,
+                                    icon: Icon(
+                                      Icons.info_outline,
+                                      size: 28.0,
+                                      color: Colors.blue[300],
+                                    ),
+                                    duration: Duration(seconds: 3),
+                                    leftBarIndicatorColor: Colors.blue[300],
+                                  )..show(context);
+                                }
+                              }
                             },
                             leading: Icon(
                               snapshot.data[index].type == "Regular" ? Icons.check_box : Icons.timer,
@@ -212,7 +236,7 @@ class _NoteState extends State < Note > {
                             subtitle: Text("Label : " + snapshot.data[index].label),
                             trailing: Text(
                               snapshot.data[index].status,
-                              style: TextStyle(color: snapshot.data[index].status == "Completed" ? Colors.lightGreen : Colors.redAccent),
+                              style: TextStyle(fontWeight: FontWeight.bold, color: snapshot.data[index].status == "Completed" ? Colors.lightGreen : Colors.redAccent),
                             ),
                           ),
                         );
