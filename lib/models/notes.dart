@@ -16,7 +16,7 @@ class Notes {
         this.type,
         this.status,
         this.dueDate,
-        this.createDate
+        this.createDate,
     });
 
     factory Notes.fromJson(Map < String, dynamic > json) {
@@ -29,6 +29,26 @@ class Notes {
             status: json['status'],
             dueDate: json['due_date'],
             createDate: json['created_at']
+        );
+    }
+}
+
+class CountNotes {
+    int complete;
+    int onprogress;
+    int overdate;
+
+    CountNotes({
+      this.complete,
+      this.onprogress,
+      this.overdate,
+    });
+
+    factory CountNotes.fromJson(Map < String, dynamic > json) {
+        return CountNotes(
+          complete: json['complete'],
+          onprogress: json['onprogress'],
+          overdate: json['overdate'],
         );
     }
 }

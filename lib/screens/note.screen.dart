@@ -18,12 +18,15 @@ class Note extends StatefulWidget {
 }
 
 class _NoteState extends State < Note > {
+  String _summaryText;
   Future < List < Notes >> notes;
+  Future < List < CountNotes >> countNotes;
 
   @override
   void initState() {
     super.initState();
     notes = _fetchNotes();
+    countNotes = _fetchCountNotes();
   }
 
   Future < List < Notes >> _fetchNotes() async {
@@ -43,6 +46,27 @@ class _NoteState extends State < Note > {
       return listOfNotes;
 
     } catch (e) {
+      throw Exception("failed");
+    }
+  }
+
+  Future < List < CountNotes >> _fetchCountNotes() async {
+    String _token = await appAuth.readUserKey();
+    String _email = await appAuth.readUserEmail();
+    final String url = Globals.apiUrl + "v1/usernotes/countNotesWithStatusByEmail" + _token;
+    try {
+      Response response = await Dio().post(url, data: {
+        'email': _email,
+      });
+
+      final items = response.data["data"].cast < Map < String, dynamic >> ();
+      List < CountNotes > listOfData = items.map < CountNotes > ((json) {
+        return CountNotes.fromJson(json);
+      }).toList();
+
+      return listOfData;
+
+    }catch(e) {
       throw Exception(e);
     }
   }
@@ -50,6 +74,7 @@ class _NoteState extends State < Note > {
   void _onRefresh() async {
     setState(() {
       notes = _fetchNotes();
+      countNotes = _fetchCountNotes();
     });
 
     _refreshController.refreshCompleted();
@@ -98,7 +123,122 @@ class _NoteState extends State < Note > {
           child: ListView(
             children: < Widget > [
               Stack(
-                children: < Widget > [backgroundHeader(), summary()],
+                children: < Widget > [backgroundHeader(), 
+                  Container(
+                      child: FutureBuilder < List < CountNotes >> (
+                        future: countNotes,
+                        builder: (BuildContext context, AsyncSnapshot < List < CountNotes >> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Positioned(
+                              top: 100,
+                              left: 45,
+                              child: Container(
+                                width: 360,
+                                height: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: < Widget > [
+                                        Column(
+                                          children: < Widget > [
+                                            Text("Summary"),
+                                            Divider(),
+                                            Text(
+                                              "Loading summary...",
+                                              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (snapshot.data[0].overdate == 0 && snapshot.data[0].onprogress == 0) {
+                            return Positioned(
+                              top: 100,
+                              left: 45,
+                              child: Container(
+                                width: 360,
+                                height: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 30.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: < Widget > [
+                                        Column(
+                                          children: < Widget > [
+                                            Text("Summary"),
+                                            Divider(),
+                                            Text(
+                                              "You're all good",
+                                              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          if(snapshot.data[0].onprogress > 0 && snapshot.data[0].overdate == 0) {
+                            _summaryText = "There's " + snapshot.data[0].onprogress.toString() + " On Progress Notes";
+                          }else if(snapshot.data[0].overdate > 0 && snapshot.data[0].onprogress == 0) {
+                            _summaryText = "There's " + snapshot.data[0].overdate.toString() + " Overdate Notes";
+                          }else {
+                            _summaryText = "There's " + snapshot.data[0].onprogress.toString() + " On Progress " + "& " + snapshot.data[0].overdate.toString() + " Overdate Notes";
+                          }
+
+                          return Positioned(
+                            top: 100,
+                            left: 45,
+                            child: Container(
+                              width: 360,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 30.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: < Widget > [
+                                      Column(
+                                        children: < Widget > [
+                                          Text("Summary"),
+                                          Divider(),
+                                          Text(
+                                            _summaryText,
+                                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                              ),
+                            ),
+                          );
+                        }
+                      ),
+                  ),
+                ],
               ),
               Container(
                 // padding: const EdgeInsets.only(top: 10),
@@ -289,40 +429,6 @@ class _NoteState extends State < Note > {
       }
     }
   }
-}
-
-Widget summary() {
-  return Positioned(
-    top: 100,
-    left: 45,
-    child: Container(
-      width: 360,
-      height: 110,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 30.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: < Widget > [
-              Column(
-                children: < Widget > [
-                  Text("Summary"),
-                  Divider(),
-                  Text(
-                    "There's 2 On Progress Notes",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ],
-          ),
-      ),
-    ),
-  );
 }
 
 Widget backgroundHeader() {
