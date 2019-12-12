@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
-import 'package:notecounting/screens/account.screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:notecounting/screens/note.screen.dart';
+import 'package:notecounting/screens/account.screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,17 +11,19 @@ class HomeScreen extends StatefulWidget {
 
 class _MyHomePageState extends State < HomeScreen > {
   int currentPage = 0;
+  DateTime currentBackPressTime;
   GlobalKey bottomNavigationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        child: Center(
-          child: _getPage(currentPage),
+      body: WillPopScope(child: Container(
+          decoration: BoxDecoration(color: Colors.white),
+          child: Center(
+            child: _getPage(currentPage),
+          ),
         ),
-      ),
+        onWillPop: onWillPop),
       bottomNavigationBar: FancyBottomNavigation(
         tabs: [
           TabData(
@@ -93,5 +96,24 @@ class _MyHomePageState extends State < HomeScreen > {
       case 3:
         return new AccountScreen();
     }
+  }
+
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || 
+        now.difference(currentBackPressTime) > Duration(seconds: 1)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(
+        msg: "Press back again to exit",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+      return Future.value(false);
+    }
+    return Future.value(true);
   }
 }

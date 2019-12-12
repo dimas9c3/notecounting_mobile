@@ -431,7 +431,8 @@ class _AddNoteState extends State < AddNote > {
 }
 
 class BasicDateField extends StatelessWidget {
-  final format = DateFormat("dd-MM-yyyy");
+  final format  = DateFormat("dd-MM-yyyy");
+  final today     = new DateTime.now();
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -441,7 +442,7 @@ class BasicDateField extends StatelessWidget {
       child: Column(children: < Widget > [
         // Text('Input Deadline For Your Note (${format.pattern})'),
         DateTimeField(
-          initialValue: DateTime.now(),
+          initialValue: today.add(new Duration(days:3)),
           decoration: InputDecoration(
             prefixIcon: new Icon(Icons.calendar_today, color: Colors.black),
             filled: true,
