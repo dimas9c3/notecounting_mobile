@@ -16,6 +16,7 @@ void main() async {
   }
 
   runApp(new MaterialApp(
+    debugShowCheckedModeBanner: false,
     title: 'NoteCounting',
       theme: ThemeData(
         primarySwatch: Colors.purple,

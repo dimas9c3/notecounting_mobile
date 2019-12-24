@@ -42,7 +42,7 @@ class FluroRouter {
 
     router.define(
       'note/add',
-      handler: _noteAddHandler,
+      handler: _noteAddHandler, transitionType: TransitionType.inFromLeft
     );
   }
 
